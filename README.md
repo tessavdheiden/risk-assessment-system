@@ -24,6 +24,17 @@ If environment needs modifications, reinstall after:
 > conda env remove -n riskass
 ```
 
+## Data
+The data represents records of corporations, their characteristics, and their historical attrition records. 
+One row represents a hypothetical corporation. There are five columns in the dataset:
+
+* "corporation", which contains four-character abbreviations for names of corporations
+* "lastmonth_activity", which contains the level of activity associated with each corporation over the previous month
+* "lastyear_activity", which contains the level of activity associated with each corporation over the previous year
+* "number_of_employees", which contains the number of employees who work for the corporation
+* "exited", which contains a record of whether the corporation exited their contract (1 indicates that the corporation exited, and 0 indicates that the corporation did not exit)
+
+The dataset's final column, "exited", is the target variable for our predictions.
 
 ## Steps
 
@@ -35,7 +46,7 @@ You'll complete the project by proceeding through 5 steps:
 4. Reporting. Automatically generate plots and documents that report on model metrics. Provide an API endpoint that can return model predictions and metrics.
 5. Process Automation. Create a script and cron job that automatically run all previous steps at regular intervals.
 
-### Step 1
+### Step 1: Data ingestion
 We will be using `ingestion.py` for the python code and `config.json` as a configuration file. 
 The `config.json` contains five entries:
 * `input_folder_path`, which specifies the location where your project will look for input data, to ingest,
@@ -45,6 +56,8 @@ and to use in model training.
 * `output_model_path`, which specifies the location to store the trained models and scores.
 * `prod_deployment_path`, which specifies the location to store the models in production.
 
+### Step 2: Training, scoring and deploying
+We will be using `training.py` to train a logistic regression model. 
 
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.

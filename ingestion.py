@@ -54,7 +54,6 @@ def merge_multiple_dataframe():
     # save file
     outputpath = root + '/' + output_folder_path
     if not os.path.exists(outputpath):
-        print(os.path.isfile(outputpath))
         os.makedirs(outputpath)
 
     # save data
