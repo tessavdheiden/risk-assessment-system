@@ -10,7 +10,7 @@ Creating and deploying the model isn't the end of your work, though. Your indust
 ![Project: a dynamic risk assessment system](front.png)
 
 ## Dependencies
-* All the dependencies are listed in the `requirements.txt` file. You can setup a virtual environment using [Anaconda](https://www.anaconda.com/products/distribution) and install the required dependencies there.
+All the dependencies are listed in the `requirements.txt` file. You can setup a virtual environment using [Anaconda](https://www.anaconda.com/products/distribution) and install the required dependencies there.
 
 ## Setup
 
@@ -34,6 +34,17 @@ You'll complete the project by proceeding through 5 steps:
 3. Diagnostics. Determine and save summary statistics related to a dataset. Time the performance of model training and scoring scripts. Check for dependency changes and package updates.
 4. Reporting. Automatically generate plots and documents that report on model metrics. Provide an API endpoint that can return model predictions and metrics.
 5. Process Automation. Create a script and cron job that automatically run all previous steps at regular intervals.
+
+### Step 1
+We will be using `ingestion.py` for the python code and `config.json` as a configuration file. 
+The `config.json` contains five entries:
+* `input_folder_path`, which specifies the location where your project will look for input data, to ingest,
+and to use in model training. 
+* `output_folder_path`, which specifies the location to store output files related to data ingestion. 
+* `test_data_path`, which specifies the location of the test dataset
+* `output_model_path`, which specifies the location to store the trained models and scores.
+* `prod_deployment_path`, which specifies the location to store the models in production.
+
 
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.
@@ -61,3 +72,9 @@ The following are other files that are included in your starter files:
 
 * requirements.txt, a text file and records the current versions of all the modules that your scripts use
 * config.json, a data file that contains names of files that will be used for configuration of your ML Python scripts
+
+## Misscelanious
+
+```bash
+> autopep8 --in-place --aggressive --aggressive [script_name].py
+```

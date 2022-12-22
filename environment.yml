@@ -26,3 +26,4 @@ dependencies:
   - threadpoolctl==2.1.0
   - Werkzeug==1.0.1
   - pip=20.3.3
+  - autopep8=1.6.0
