@@ -58,6 +58,13 @@ and to use in model training.
 
 ### Step 2: Training, scoring and deploying
 We will be using `training.py` to train a logistic regression model. 
+Furthermore `scoring.py` and `deployment.py` will evaluate the model and save it and stats in deployment folder. 
+
+### Step 3: Model and data diagnostics
+`diagnostics.py` runs inference of the model on the testdata.
+It also does data checks: summary of statistics (mean, median, std) and checking for nans.
+Furthermore, the execution time of training and ingestion is done and dependencies are checked on their versions
+and compared with the latest versions available. 
 
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.
