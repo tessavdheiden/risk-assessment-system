@@ -47,7 +47,8 @@ def dataframe_summary():
     medians = df.median()
     stds = df.std()
     final_list = np.concatenate([means.values, medians.values, stds.values])
-    return final_list
+    assert final_list.shape == (len(numeric_cols)*3, )
+    return list(final_list)
 
 
 def missing_data():
@@ -111,7 +112,7 @@ def outdated_packages_list():
             if package == outdated_package:
                 results.append([package, current_version, latest_version])
 
-    return result
+    return results
 
 
 if __name__ == '__main__':

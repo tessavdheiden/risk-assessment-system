@@ -66,6 +66,27 @@ It also does data checks: summary of statistics (mean, median, std) and checking
 Furthermore, the execution time of training and ingestion is done and dependencies are checked on their versions
 and compared with the latest versions available. 
 
+### Step 4: Reporting
+`reporting.py` saves a confusion matrix plot to disk. It shows the number of FP, TP, FN, TN obtained with our model.
+Furthermore, the `app.py` can be called:
+```bash
+python app.py
+```
+which spins up an api on localhost. It can be accessed in your browser at [link](http://127.0.0.1:8000/).
+But, we call also call `apicalls.py`:
+```bash
+python apicalls.py
+```
+This will make requests for following endpoints:
+* [prediction](http://127.0.0.1:8000/prediction?filename=testdata/testdata.csv)
+This endpoint should take a dataset's file location as its input, and return the outputs of the prediction function you created in Step 3.
+* [scoring](http://127.0.0.1:8000/scoring)
+This endpoint needs to run the scoring.py script you created in Step 2 and return its output.
+* [summary](http://127.0.0.1:8000/summary)
+This endpoint needs to run the summary statistics function you created in Step 3 and return its outputs.
+* [diagnostics](http://127.0.0.1:8000/diagnostics)
+This endpoint needs to run the timing, missing data, and dependency check functions you created in Step 3 and return their outputs.
+
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.
 
