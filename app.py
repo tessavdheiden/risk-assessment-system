@@ -14,11 +14,6 @@ import os
 app = Flask(__name__)
 # app.secret_key = '1652d576-484a-49fd-913a-6879acfa6ba4'
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
-
-dataset_csv_path = os.path.join(config['output_folder_path'])
-
 prediction_model = None
 
 
@@ -35,8 +30,11 @@ def index():
 @app.route("/prediction", methods=['POST', 'OPTIONS'])
 def predict():
     # call the prediction function you created in Step 3
-    # filename = request.args.get('filename')
-    predictions = diagnostics.model_predictions()
+    filename = request.args.get('filename')
+    X = pd.read_csv(filename)
+    X.drop(['corporation', 'exited'], inplace=True, axis=1)
+
+    predictions = diagnostics.model_predictions(X)
     # add return value for prediction outputs
     return {'predictions': str(predictions)}
 

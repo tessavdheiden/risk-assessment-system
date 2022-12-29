@@ -74,24 +74,26 @@ the dependency packages are checked on their versions and compared with the late
 `reporting.py` saves a confusion matrix plot from data specified at `test_data_path` and predictions generated
 by the method in `diagnostics.py` to folder given by `output_model_path`.
 
-Furthermore, the `app.py` can be called:
+All steps can be accessed by an API.
+First, `app.py` needs to be called:
 ```bash
 > python app.py
 ```
 which spins up an api on localhost. It can be accessed in your browser at [link](http://127.0.0.1:8000/).
-But, we call also call `apicalls.py`:
+Next, the `apicalls.py` runs all steps.
 ```bash
 > python apicalls.py
 ```
 This will make requests for following endpoints:
 * [prediction](http://127.0.0.1:8000/prediction?filename=testdata/testdata.csv)
-This endpoint should take a dataset's file location as its input, and return the outputs of the prediction function you created in Step 3.
+This endpoint takes a dataset file location as its input, and return the outputs of the prediction function created in Step 3,
+in `diagnostics.py`.
 * [scoring](http://127.0.0.1:8000/scoring)
-This endpoint needs to run the scoring.py script you created in Step 2 and return its output.
+This endpoint runs the `scoring.py` script created in Step 2 and return its output.
 * [summary](http://127.0.0.1:8000/summary)
-This endpoint needs to run the summary statistics function you created in Step 3 and return its outputs.
+This endpoint runs the summary statistics function on the data created in Step 3 in `diagnostics.py` and returns its outputs.
 * [diagnostics](http://127.0.0.1:8000/diagnostics)
-This endpoint needs to run the timing, missing data, and dependency check functions you created in Step 3 and return their outputs.
+This endpoint needs to run the timing, missing data, and dependency check functions also created in Step 3 and return their outputs.
 
 ### Step 5: Process automation
 The file `fullprocess.py` runs the redeployment process, after we updated the `config.json`:
