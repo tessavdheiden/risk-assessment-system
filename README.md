@@ -1,11 +1,8 @@
 # Background
 
 Imagine that you're the Chief Data Scientist at a big company that has 10,000 corporate clients. Your company is extremely concerned about attrition risk: the risk that some of their clients will exit their contracts and decrease the company's revenue. They have a team of client managers who stay in contact with clients and try to convince them not to exit their contracts. However, the client management team is small, and they're not able to stay in close contact with all 10,000 clients.
-
 The company needs you to create, deploy, and monitor a risk assessment ML model that will estimate the attrition risk of each of the company's 10,000 clients. If the model you create and deploy is accurate, it will enable the client managers to contact the clients with the highest risk and avoid losing clients and revenue.
-
 Creating and deploying the model isn't the end of your work, though. Your industry is dynamic and constantly changing, and a model that was created a year or a month ago might not still be accurate today. Because of this, you need to set up regular monitoring of your model to ensure that it remains accurate and up-to-date. You'll set up processes and scripts to re-train, re-deploy, monitor, and report on your ML model, so that your company can get risk assessments that are as accurate as possible and minimize client attrition.
-
 
 ![Project: a dynamic risk assessment system](front.png)
 
@@ -38,7 +35,7 @@ The dataset's final column, "exited", is the target variable for our predictions
 
 ## Steps
 
-You'll complete the project by proceeding through 5 steps:
+We'll complete the project by proceeding through 5 steps:
 
 1. Data ingestion. Automatically check a database for new data that can be used for model training. Compile all training data to a training dataset and save it to persistent storage. Write metrics related to the completed data ingestion tasks to persistent storage.
 2. Training, scoring, and deploying. Write scripts that train an ML model that predicts attrition risk, and score the model. Write the model and the scoring metrics to persistent storage.
@@ -46,9 +43,7 @@ You'll complete the project by proceeding through 5 steps:
 4. Reporting. Automatically generate plots and documents that report on model metrics. Provide an API endpoint that can return model predictions and metrics.
 5. Process Automation. Create a script and cron job that automatically run all previous steps at regular intervals.
 
-### Step 1: Data ingestion
-We will be using `ingestion.py` for the python code and `config.json` as a configuration file. 
-The `config.json` contains five entries:
+`config.json` is a configuration file, which contains five entries:
 * `input_folder_path`, which specifies the location where your project will look for input data, to ingest,
 and to use in model training. 
 * `output_folder_path`, which specifies the location to store output files related to data ingestion. 
@@ -56,26 +51,37 @@ and to use in model training.
 * `output_model_path`, which specifies the location to store the trained models and scores.
 * `prod_deployment_path`, which specifies the location to store the models in production.
 
+### Step 1: Data ingestion
+We will be using `ingestion.py` to merge and deduplicate two datasets from `input_folder_path` and save it to `output_folder_path`.
+The output folder also contains `ingestedfiles.txt` with a list of the merged datasets.
+
 ### Step 2: Training, scoring and deploying
-We will be using `training.py` to train a logistic regression model. 
-Furthermore `scoring.py` and `deployment.py` will evaluate the model and save it and stats in deployment folder. 
+We will be using `training.py` to train a logistic regression model on the data in `output_folder_path`,
+and will be stored at `output_model_path`. 
+Furthermore `scoring.py` will evaluate the model on test data in `test_data_path` and 
+save the f1score to `latestscore.txt` at `output_model_path`.
+`deployment.py` will just copy files: the trained model, the model score and the list of the ingested data set names
+to `prod_deployment_path`. 
 
 ### Step 3: Model and data diagnostics
-`diagnostics.py` runs inference of the model on the testdata.
-It also does data checks: summary of statistics (mean, median, std) and checking for nans.
-Furthermore, the execution time of training and ingestion is done and dependencies are checked on their versions
-and compared with the latest versions available. 
+`diagnostics.py` specifies several functions to check model performance, data and timing.
+A method for running inference with the model specified in `prod_deployment_path`.
+Methods for data checks: summary of statistics (mean, median, std) and checking for nans, which are stored at `output_folder_path`.
+Furthermore, the execution time of `training.py` and `ingestion.py` are done, 
+the dependency packages are checked on their versions and compared with the latest versions available. 
 
 ### Step 4: Reporting
-`reporting.py` saves a confusion matrix plot to disk. It shows the number of FP, TP, FN, TN obtained with our model.
+`reporting.py` saves a confusion matrix plot from data specified at `test_data_path` and predictions generated
+by the method in `diagnostics.py` to folder given by `output_model_path`.
+
 Furthermore, the `app.py` can be called:
 ```bash
-python app.py
+> python app.py
 ```
 which spins up an api on localhost. It can be accessed in your browser at [link](http://127.0.0.1:8000/).
 But, we call also call `apicalls.py`:
 ```bash
-python apicalls.py
+> python apicalls.py
 ```
 This will make requests for following endpoints:
 * [prediction](http://127.0.0.1:8000/prediction?filename=testdata/testdata.csv)
@@ -86,6 +92,24 @@ This endpoint needs to run the scoring.py script you created in Step 2 and retur
 This endpoint needs to run the summary statistics function you created in Step 3 and return its outputs.
 * [diagnostics](http://127.0.0.1:8000/diagnostics)
 This endpoint needs to run the timing, missing data, and dependency check functions you created in Step 3 and return their outputs.
+
+### Step 5: Process automation
+The file `fullprocess.py` runs the redeployment process, after we updated the `config.json`:
+1. We check the ingested data we created in `prod_deployment_path`'s `ingestedfiles.txt`, 
+which were used for training and see if is equal to the "new" data in the `input_folder_path`. If not, we proceed to step 2.
+2. We need to retrain our model on the new data. Next we check if the new model has drift, by running our `apicalls.py`.
+Note: We have to launch the app in a seperate terminal.
+3. We wrote a crontab file that runs the `fullprocess.py` script one time every 10 min.
+
+The following cron job will run at 12:59 on January 5, just once per year:
+```
+    59 12 5 1 * python /home/crondemo.py
+```
+
+The following cron job will every 5 minutes:
+```
+    */5 * * * * python /home/crondemo.py
+```
 
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.
@@ -114,7 +138,7 @@ The following are other files that are included in your starter files:
 * requirements.txt, a text file and records the current versions of all the modules that your scripts use
 * config.json, a data file that contains names of files that will be used for configuration of your ML Python scripts
 
-## Misscelanious
+## Miscellaneous
 
 ```bash
 > autopep8 --in-place --aggressive --aggressive [script_name].py

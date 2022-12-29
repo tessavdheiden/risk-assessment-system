@@ -37,7 +37,7 @@ def merge_multiple_dataframe():
         fullpath = root + '/' + input_folder_path + '/' + each_filename
         try:
             currentdf = pd.read_csv(fullpath)
-            namelist.append(fullpath)
+            namelist.append(each_filename)
             try:
                 final_dataframe = final_dataframe.append(
                     currentdf).reset_index(drop=True)
@@ -46,7 +46,7 @@ def merge_multiple_dataframe():
                     f'Cannot append dataframe with columns {currentdf.columns}')
                 return False
         except BaseException:
-            logger.info(f'Failed to read {fullpath}')
+            logger.info(f'Failed to read {each_filename}')
             pass
 
     # drop duplicates
@@ -60,9 +60,9 @@ def merge_multiple_dataframe():
     targetpath = outputpath + '/' + 'finaldata.csv'
     try:
         final_dataframe.to_csv(targetpath, index=False)
-        logger.info(f'File saved to {targetpath}')
+        logger.info(f'File saved to {"/".join(targetpath.split("/")[-2:])}')
     except BaseException:
-        logger.info(f'Failed to save {targetpath}')
+        logger.info(f'Failed to save {"/".join(targetpath.split("/")[-2:])}')
 
     # save records
     targetpath = outputpath + '/' + 'ingestedfiles.txt'

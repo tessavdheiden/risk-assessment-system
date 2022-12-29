@@ -19,22 +19,17 @@ prod_deployment_path = os.path.join(root, config['prod_deployment_path'])
 # Function to get model predictions
 
 
-def model_predictions():
+def model_predictions(X: pd.DataFrame):
     # read the deployed model and a test dataset, calculate predictions
+    # return value should be a list containing all predictions
     with open(os.path.join(prod_deployment_path, 'trainedmodel.pkl'), 'rb') as file:
         model = pickle.load(file)
 
-    X = pd.read_csv(os.path.join(test_data_path, 'testdata.csv'))
-    X.drop(['corporation', 'exited'], inplace=True, axis=1)
-
-    # return value should be a list containing all predictions
     predicted = list(model.predict(X))
     assert len(predicted) == len(X)
     return predicted
 
 # Function to get summary statistics
-
-
 def dataframe_summary():
     # calculate summary statistics here
     df = pd.read_csv(os.path.join(dataset_csv_path, 'finaldata.csv'))
@@ -116,7 +111,10 @@ def outdated_packages_list():
 
 
 if __name__ == '__main__':
-    model_predictions()
+    X = pd.read_csv(os.path.join(test_data_path, 'testdata.csv'))
+    X.drop(['corporation', 'exited'], inplace=True, axis=1)
+
+    model_predictions(X)
     dataframe_summary()
     missing_data()
     execution_time()

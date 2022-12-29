@@ -26,11 +26,13 @@ output_model_path = os.path.join(root, config['output_model_path'])
 def score_model():
     # calculate a confusion matrix using the test data and the deployed model
     # write the confusion matrix to the workspace
-
-    # we should ensure dataset in model_predictions() is the same
-    y_pred = model_predictions()
     X = pd.read_csv(os.path.join(test_data_path, 'testdata.csv'))
     y = X['exited']
+    X.drop(['corporation', 'exited'], inplace=True, axis=1)
+
+    # we should ensure dataset in model_predictions() is the same
+    y_pred = model_predictions(X)
+
     labels = [0, 1]
     cm = metrics.confusion_matrix(y, y_pred, labels=labels)
     cmd = metrics.ConfusionMatrixDisplay(cm)

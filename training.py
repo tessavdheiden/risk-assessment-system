@@ -55,7 +55,7 @@ def train_model():
     # this removes the column "exited" from X and puts it into y
     y = X.pop("exited")
     X_train, X_val, y_train, y_val = train_test_split(X, y)
-    logger.info('Training model')
+    logger.info('Training model...')
     lr.fit(X_train, y_train)
 
     # write the trained model to your workspace in a file called
@@ -64,8 +64,9 @@ def train_model():
     if not os.path.exists(outputpath):
         os.makedirs(outputpath)
 
-    logger.info(f'Saving model')
-    filehandler = open(outputpath + '/' + 'trainedmodel.pkl', 'wb')
+    model_name = 'trainedmodel.pkl'
+    logger.info(f'Saving model {os.path.join(model_path, model_name)}')
+    filehandler = open(outputpath + '/' + model_name, 'wb')
     pickle.dump(lr, filehandler)
 
 
