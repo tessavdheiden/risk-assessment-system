@@ -96,12 +96,24 @@ This endpoint runs the summary statistics function on the data created in Step 3
 This endpoint needs to run the timing, missing data, and dependency check functions also created in Step 3 and return their outputs.
 
 ### Step 5: Process automation
-The file `fullprocess.py` runs the redeployment process, after we updated the `config.json`:
-1. We check the ingested data we created in `prod_deployment_path`'s `ingestedfiles.txt`, 
-which were used for training and see if is equal to the "new" data in the `input_folder_path`. If not, we proceed to step 2.
-2. We need to retrain our model on the new data. Next we check if the new model has drift, by running our `apicalls.py`.
-Note: We have to launch the app in a seperate terminal.
-3. We wrote a crontab file that runs the `fullprocess.py` script one time every 10 min.
+The file `fullprocess.py` runs the redeployment process, after we updated the `config.json` to simulate new data:
+1. We check the ingested data we created in `ingestedfiles.txt` in `prod_deployment_path` used for training. 
+If the data at the `input_folder_path` contains new data, we run the `ingestion.py` to merge the new data.
+2. Next, we check if the old model performs well on the new data. If it doesn't we run `training.py` again to create a new model.
+We also need to copy the model and `ingestedfiles.txt` by running `deployment.py`.
+3. All together, we run `reporting.py` to create a new confusion matrix and `apicalls.py` to create a new `apireturns.txt`.
+
+We first run the app:
+```bash
+> python app.py
+```
+
+Then the python script:
+```bash
+> python fullprocess.py
+```
+
+We have a crontab file that runs the `fullprocess.py` script one time every 10 min.
 
 The following cron job will run at 12:59 on January 5, just once per year:
 ```
@@ -112,6 +124,8 @@ The following cron job will every 5 minutes:
 ```
     */5 * * * * python /home/crondemo.py
 ```
+
+![Full process](fullprocess.jpeg)
 
 ## Starter Files
 There are many files in the starter: 10 Python scripts, one configuration file, one requirements file, and five datasets.
