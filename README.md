@@ -154,6 +154,13 @@ The following are other files that are included in your starter files:
 * requirements.txt, a text file and records the current versions of all the modules that your scripts use
 * config.json, a data file that contains names of files that will be used for configuration of your ML Python scripts
 
+## SQL Database
+
+The script `dbsetup.py` sets up a sql database:
+* create_db() creates a database.
+* create_table() creates a table for our data. 
+* `ingestion.py` writes to this database.
+
 ## Miscellaneous
 
 ```bash

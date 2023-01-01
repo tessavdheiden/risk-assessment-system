@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 import logging
+from sqlalchemy import create_engine
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
@@ -19,7 +20,7 @@ output_folder_path = config['output_folder_path']
 
 
 # Function for data ingestion
-def merge_multiple_dataframe():
+def merge_multiple_dataframe(engine):
     # check for datasets, compile them together, and write to an output file
     final_dataframe = pd.DataFrame(
         columns=[
@@ -70,6 +71,10 @@ def merge_multiple_dataframe():
         for name in namelist:
             f.write(name + '\n')
 
+    final_dataframe.to_sql(con=engine, name='Ingestion', if_exists='replace')
+
 
 if __name__ == '__main__':
-    merge_multiple_dataframe()
+    engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
+                           .format(host="localhost", db="riskassessment", user="root", pw="Mohammed123..."))
+    merge_multiple_dataframe(engine)
