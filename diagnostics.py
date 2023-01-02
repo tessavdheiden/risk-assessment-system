@@ -6,6 +6,12 @@ import timeit
 import os
 import json
 import subprocess
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logger = logging.getLogger()
+
 
 # Load config.json and get environment variables
 with open('config.json', 'r') as f:
@@ -16,9 +22,8 @@ dataset_csv_path = os.path.join(root, config['output_folder_path'])
 test_data_path = os.path.join(root, config['test_data_path'])
 prod_deployment_path = os.path.join(root, config['prod_deployment_path'])
 
+
 # Function to get model predictions
-
-
 def model_predictions(X: pd.DataFrame):
     # read the deployed model and a test dataset, calculate predictions
     # return value should be a list containing all predictions
@@ -29,6 +34,7 @@ def model_predictions(X: pd.DataFrame):
     assert len(predicted) == len(X)
     return predicted
 
+
 # Function to get summary statistics
 def dataframe_summary():
     # calculate summary statistics here
@@ -38,33 +44,30 @@ def dataframe_summary():
         'lastyear_activity',
         'number_of_employees']
     df = df[numeric_cols]
-    means = df.mean()
-    medians = df.median()
-    stds = df.std()
-    final_list = np.concatenate([means.values, medians.values, stds.values])
-    assert final_list.shape == (len(numeric_cols)*3, )
-    return list(final_list)
+    result_summary = df.agg(['mean', 'median', 'std'])
+    logger.info(f'Result summary created: {result_summary}')
+    assert result_summary.shape == (3, len(numeric_cols))
+    return result_summary.values.tolist()
 
 
 def missing_data():
     df = pd.read_csv(os.path.join(dataset_csv_path, 'finaldata.csv'))
-    nans = df.isna().sum()
-    percent = [nan / len(df) for nan in nans]
-    assert len(percent) == len(df.columns)
-    return percent
+    missing_values_df = df.isna().sum() / df.shape[0]
+    assert len(missing_values_df) == len(df.columns)
+    return missing_values_df
 
 
-def ingestion_timing():
-    starttime = timeit.default_timer()
-    os.system('python3 ingestion.py')
-    timing = timeit.default_timer() - starttime
+def ingestion_timing(n_times=int(1e0)):
+    code = "os.system('python3 ingestion.py')"
+    timing = timeit.timeit(code, setup='import os', number=n_times) / n_times
+    logger.info(f'Ingestion time: {timing}')
     return timing
 
 
-def training_timing():
-    starttime = timeit.default_timer()
-    os.system('python3 training.py')
-    timing = timeit.default_timer() - starttime
+def training_timing(n_times=int(1e0)):
+    code = "os.system('python3 training.py')"
+    timing = timeit.timeit(code, setup='import os', number=n_times) / n_times
+    logger.info(f'Training time: {timing}')
     return timing
 
 
@@ -77,9 +80,8 @@ def execution_time():
     # return a list of 2 timing values in seconds
     return [training_time, ingestion_time]
 
+
 # Function to check dependencies
-
-
 def outdated_packages_list():
     # get a list of current versions
     with open(os.path.join(root, 'requirements.txt'), 'r') as f:

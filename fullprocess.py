@@ -79,6 +79,7 @@ new_model_score = score_model(
     model_path=os.path.join(root, prod_deployment_path, 'trainedmodel.pkl'),
     data_path=os.path.join(root, output_folder_path, 'finaldata.csv')
 )
+os.system('python3 scoring.py')
 
 # 4. Check whether the new score from step 3 is higher or lower than the score recorded in latestscore.txt in
 # step 1 using the raw comparison test.

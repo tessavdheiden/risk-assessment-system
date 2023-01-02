@@ -18,12 +18,13 @@ logger = logging.getLogger()
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-dataset_csv_path = os.path.join(config['output_folder_path'])
-model_path = os.path.join(config['output_model_path'])
+root = os.getcwd()
+dataset_csv_path = os.path.join(root, config['output_folder_path'])
+model_path = os.path.join(root, config['output_model_path'])
 
 
 # Function for training the model
-def train_model():
+def train_model(model_save_path):
 
     # use this logistic regression for training
     lr = LogisticRegression(
@@ -44,30 +45,25 @@ def train_model():
         warm_start=False)
 
     # fit the logistic regression to your data
-    root = os.getcwd()
-    folderpath = root + '/' + dataset_csv_path
-    pathfile = folderpath + '/' + \
-        list(filter(lambda x: '.csv' in x, os.listdir(folderpath)))[0]
-    X = pd.read_csv(pathfile)
-    X = X.drop('corporation', axis=1)
-    # X = df[['lastmonth_activity', 'lastyear_activity', 'number_of_employees']].values.reshape(-1, 3)
-    # y = df['exited'].values.reshape(-1, 1)
-    # this removes the column "exited" from X and puts it into y
-    y = X.pop("exited")
+    X = pd.read_csv(os.path.join(dataset_csv_path, 'finaldata.csv'))
+    y = X["exited"]
+    dropped_columns = ["exited", "corporation"]
+    X = X.drop(dropped_columns, axis=1)
+
     X_train, X_val, y_train, y_val = train_test_split(X, y)
     logger.info('Training model...')
     lr.fit(X_train, y_train)
 
     # write the trained model to your workspace in a file called
     # trainedmodel.pkl
-    outputpath = root + '/' + model_path
-    if not os.path.exists(outputpath):
-        os.makedirs(outputpath)
-
-    model_name = 'trainedmodel.pkl'
-    logger.info(f'Saving model {os.path.join(model_path, model_name)}')
-    filehandler = open(outputpath + '/' + model_name, 'wb')
+    logger.info(f'Saving trained model {"/".join(model_save_path.split("/")[-2:])}')
+    filehandler = open(model_save_path, 'wb')
     pickle.dump(lr, filehandler)
 
 
-train_model()
+if __name__ == '__main__':
+    outputpath = root + '/' + model_path
+    if not os.path.exists(outputpath):
+        os.makedirs(outputpath)
+    model_name = 'trainedmodel.pkl'
+    train_model(model_save_path=os.path.join(model_path, model_name))

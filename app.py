@@ -2,10 +2,8 @@ from flask import Flask, session, jsonify, request
 import pandas as pd
 import numpy as np
 import pickle
-# import create_prediction_model
 import diagnostics
 import scoring
-# import predict_exited_from_saved_model
 import json
 import os
 
@@ -55,7 +53,7 @@ def stats_score():
 def stats_summary():
     # check means, medians, and modes for each column
     dfsummary = diagnostics.dataframe_summary()
-    dfsummary = [f'{stat:.2f}' for stat in dfsummary]
+    dfsummary = [f'{stat:.2f}' for row in dfsummary for stat in row]
     # return a list of all calculated summary statistics
     return {'summary': str(dfsummary)}
 
@@ -73,6 +71,7 @@ def stats_diagnostics():
         'training_time': f'{training_time:.2f}',
         'ingestion_time': f'{ingestion_time:.2f}',
         'missing_data': missing_data,
+        'outdated_package_list': outdated_package_list
     }
     return result  # add return value for all diagnostics
 

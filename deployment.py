@@ -7,6 +7,12 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 import json
+import shutil
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logger = logging.getLogger()
 
 
 # Load config.json and correct path variable
@@ -26,35 +32,22 @@ def store_model_into_pickle():
 
     # load model
     inputmodelpath = os.path.join(root, output_model_path, 'trainedmodel.pkl')
-    with open(inputmodelpath, 'rb') as file:
-        model = pickle.load(file)
-    # load scores
-    outputscorepath = os.path.join(root, output_model_path, 'latestscore.txt')
-    scores = open(outputscorepath)
-    # load data
-    ingestfilespath = os.path.join(
+    outputmodelpath = os.path.join(root, prod_deployment_path, 'trainedmodel.pkl')
+    shutil.copy2(inputmodelpath, outputmodelpath)
+    logger.info(f'Copied model from {inputmodelpath} to {outputmodelpath}')
+
+    # load scores and ingestfiles
+    inputscorepath = os.path.join(root, output_model_path, 'latestscore.txt')
+    outputscorepath = os.path.join(root, prod_deployment_path, 'latestscore.txt')
+    shutil.copy2(inputscorepath, outputscorepath)
+    logger.info(f'Copied score from {inputscorepath} to {outputscorepath}')
+
+    inputingestfilespath = os.path.join(
         root, output_folder_path, 'ingestedfiles.txt')
-    ingestfiles = open(ingestfilespath)
-
-    if not os.path.exists(root + '/' + prod_deployment_path):
-        os.makedirs(root + '/' + prod_deployment_path)
-
-    # save model
-    outputmodelpath = os.path.join(
-        root, prod_deployment_path, 'trainedmodel.pkl')
-    filehandler = open(outputmodelpath, 'wb')
-    pickle.dump(model, filehandler)
-
-    # save scores
-    scorepath = os.path.join(root, prod_deployment_path, 'latestscore.txt')
-    with open(scorepath, 'w') as b:
-        for line in scores:
-            b.write(line)
-
-    ingestpath = os.path.join(root, prod_deployment_path, 'ingestedfiles.txt')
-    with open(ingestpath, 'w') as b:
-        for line in ingestfiles:
-            b.write(line)
+    outputingestfilespath = os.path.join(root, prod_deployment_path, 'ingestedfiles.txt')
+    shutil.copy2(inputingestfilespath, outputingestfilespath)
+    logger.info(f'Copied score from {inputingestfilespath} to {outputingestfilespath}')
 
 
-store_model_into_pickle()
+if __name__ == '__main__':
+    store_model_into_pickle()
